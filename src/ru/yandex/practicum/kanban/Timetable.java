@@ -18,7 +18,7 @@ public class Timetable {
         //сохраняем занятие в расписании
         TreeMap<TimeOfDay, List<TrainingSession>> daySchedule = timetable.get(trainingSession.getDayOfWeek());
         List<TrainingSession> dayTimeSchedule = daySchedule.get(trainingSession.getTimeOfDay());
-        if(dayTimeSchedule == null) {
+        if (dayTimeSchedule == null) {
             dayTimeSchedule = new ArrayList<>();
             dayTimeSchedule.add(trainingSession);
             daySchedule.put(trainingSession.getTimeOfDay(), dayTimeSchedule);
