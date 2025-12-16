@@ -30,8 +30,8 @@ public class Timetable {
     public List<TrainingSession> getTrainingSessionsForDay(DayOfWeek dayOfWeek) {
         TreeMap<TimeOfDay, List<TrainingSession>> daySchedule = timetable.get(dayOfWeek);
         List<TrainingSession> result = new ArrayList<>();
-        for (TimeOfDay time : daySchedule.navigableKeySet()) {
-            result.addAll(daySchedule.get(time));
+        for (List<TrainingSession> timeSchedule : daySchedule.values()) {
+            result.addAll(timeSchedule);
         }
         return result;
     }
