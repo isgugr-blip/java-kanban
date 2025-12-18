@@ -1,5 +1,7 @@
 package ru.yandex.practicum.kanban;
 
+import java.util.Objects;
+
 public class Coach {
 
     //фамилия
@@ -13,6 +15,18 @@ public class Coach {
         this.surname = surname;
         this.name = name;
         this.middleName = middleName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Coach coach = (Coach) o;
+        return Objects.equals(getSurname(), coach.getSurname()) && Objects.equals(getName(), coach.getName()) && Objects.equals(getMiddleName(), coach.getMiddleName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getSurname(), getName(), getMiddleName());
     }
 
     public String getSurname() {

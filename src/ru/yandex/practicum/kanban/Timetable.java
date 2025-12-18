@@ -3,6 +3,7 @@ package ru.yandex.practicum.kanban;
 import ru.yandex.practicum.kanban.constants.DayOfWeek;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Timetable {
     private final HashMap<DayOfWeek, TreeMap<TimeOfDay, List<TrainingSession>>> timetable;
@@ -27,13 +28,8 @@ public class Timetable {
         }
     }
 
-    public List<TrainingSession> getTrainingSessionsForDay(DayOfWeek dayOfWeek) {
-        TreeMap<TimeOfDay, List<TrainingSession>> daySchedule = timetable.get(dayOfWeek);
-        List<TrainingSession> result = new ArrayList<>();
-        for (List<TrainingSession> timeSchedule : daySchedule.values()) {
-            result.addAll(timeSchedule);
-        }
-        return result;
+    public TreeMap<TimeOfDay, List<TrainingSession>> getTrainingSessionsForDay(DayOfWeek dayOfWeek) {
+        return timetable.get(dayOfWeek);
     }
 
 
@@ -41,24 +37,22 @@ public class Timetable {
         return timetable.get(dayOfWeek).getOrDefault(timeOfDay, List.of());
     }
 
-    public Map<Coach, Integer> getCountByCoaches() {
-        Map<Coach, Integer> coachSessionCount = new HashMap<>();
+    public List<CoachCounter> getCountByCoaches() {
+        HashMap<Coach, Integer> coachSessionCount = new HashMap<>();
 
         for (DayOfWeek day : timetable.keySet()) {
             TreeMap<TimeOfDay, List<TrainingSession>> daySchedule = timetable.get(day);
             for (List<TrainingSession> sessions : daySchedule.values()) {
                 for (TrainingSession session : sessions) {
-                    Coach coach = session.getCoach();
-                    coachSessionCount.put(coach, coachSessionCount.getOrDefault(coach, 0) + 1);
+                    coachSessionCount.merge(session.getCoach(), 1, Integer::sum);
                 }
             }
         }
 
         return coachSessionCount.entrySet().stream()
             .sorted(Map.Entry.<Coach, Integer>comparingByValue().reversed())
-            .collect(LinkedHashMap::new,
-                     (map, entry) -> map.put(entry.getKey(), entry.getValue()),
-                     LinkedHashMap::putAll);
+            .map(entry -> new CoachCounter(entry.getKey(), entry.getValue()))
+            .collect(Collectors.toList());
     }
 
 }

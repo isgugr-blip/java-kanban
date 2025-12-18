@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.kanban.constants.Age;
 import ru.yandex.practicum.kanban.constants.DayOfWeek;
 
-import java.util.Map;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,7 +27,7 @@ class CoachCounterTest {
 
     @Test
     void testEmptyTimetable() {
-        Map<Coach, Integer> coachCounts = timetable.getCountByCoaches();
+        List<CoachCounter> coachCounts = timetable.getCountByCoaches();
 
         assertTrue(coachCounts.isEmpty(), "Расписание пустое, количество тренировок должно быть 0");
     }
@@ -38,10 +38,9 @@ class CoachCounterTest {
         timetable.addNewTrainingSession(new TrainingSession(group, coach1, DayOfWeek.TUESDAY, new TimeOfDay(12, 0)));
         timetable.addNewTrainingSession(new TrainingSession(group, coach1, DayOfWeek.WEDNESDAY, new TimeOfDay(14, 0)));
 
-        Map<Coach, Integer> coachCounts = timetable.getCountByCoaches();
-
+        List<CoachCounter> coachCounts = timetable.getCountByCoaches();
         assertEquals(1, coachCounts.size(), "Должен быть только один тренер");
-        assertEquals(3, coachCounts.get(coach1), "Тренер должен иметь 3 тренировки");
+        assertEquals(3, coachCounts.getFirst().getSessionCount(), "Тренер должен иметь 3 тренировки");
     }
 
     @Test
@@ -55,18 +54,16 @@ class CoachCounterTest {
 
         timetable.addNewTrainingSession(new TrainingSession(group, coach3, DayOfWeek.SATURDAY, new TimeOfDay(10, 0)));
 
-        Map<Coach, Integer> coachCounts = timetable.getCountByCoaches();
+        List<CoachCounter> coachCounts = timetable.getCountByCoaches();
 
         assertEquals(3, coachCounts.size(), "Должно быть 3 тренера");
 
-        Object[] coaches = coachCounts.keySet().toArray();
-        assertEquals(coach2, coaches[0], "Первым должен быть тренер с наибольшим количеством тренировок");
-        assertEquals(3, coachCounts.get(coach2), "Второй тренер должен иметь 3 тренировки");
+        assertEquals(coach2, coachCounts.get(0).getCoach(), "Первым должен быть тренер с наибольшим количеством тренировок");
+        assertEquals(coach1, coachCounts.get(1).getCoach(), "Вторым должен быть тренер со вторым количеством тренировок");
+        assertEquals(coach3, coachCounts.get(2).getCoach(), "Третьим должен быть тренер с наименьшим количеством тренировок");
 
-        assertEquals(coach1, coaches[1], "Вторым должен быть тренер со вторым количеством тренировок");
-        assertEquals(2, coachCounts.get(coach1), "Первый тренер должен иметь 2 тренировки");
-
-        assertEquals(coach3, coaches[2], "Третьим должен быть тренер с наименьшим количеством тренировок");
-        assertEquals(1, coachCounts.get(coach3), "Третий тренер должен иметь 1 тренировку");
+        assertEquals(2, coachCounts.get(1).getSessionCount(), "Первый тренер должен иметь 2 тренировки");
+        assertEquals(3, coachCounts.get(0).getSessionCount(), "Второй тренер должен иметь 3 тренировки");
+        assertEquals(1, coachCounts.get(2).getSessionCount(), "Третий тренер должен иметь 1 тренировку");
     }
 }

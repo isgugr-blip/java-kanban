@@ -5,6 +5,7 @@ import ru.yandex.practicum.kanban.constants.Age;
 import ru.yandex.practicum.kanban.constants.DayOfWeek;
 
 import java.util.List;
+import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -22,9 +23,13 @@ public class TimetableTest {
         timetable.addNewTrainingSession(singleTrainingSession);
 
         //Проверить, что за понедельник вернулось одно занятие
-        assertEquals(1, timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY).size());
+        TreeMap<TimeOfDay, List<TrainingSession>> mondaySchedule = timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY);
+        assertEquals(1, mondaySchedule.size());
+        assertEquals(1, mondaySchedule.get(new TimeOfDay(13, 0)).size());
+
         //Проверить, что за вторник не вернулось занятий
-        assertEquals(0, timetable.getTrainingSessionsForDay(DayOfWeek.TUESDAY).size());
+        TreeMap<TimeOfDay, List<TrainingSession>> tuesdaySchedule = timetable.getTrainingSessionsForDay(DayOfWeek.TUESDAY);
+        assertEquals(0, tuesdaySchedule.size());
     }
 
     @Test
@@ -54,10 +59,15 @@ public class TimetableTest {
         // Проверить, что за понедельник вернулось одно занятие
         assertEquals(1, timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY).size());
         // Проверить, что за четверг вернулось два занятия в правильном порядке: сначала в 13:00, потом в 20:00
-        List<TrainingSession> thursdaySchedule =  timetable.getTrainingSessionsForDay(DayOfWeek.THURSDAY);
-        assertEquals(2, thursdaySchedule.size());
-        assertEquals(thursdayChildTrainingSession, thursdaySchedule.get(0));
-        assertEquals(thursdayAdultTrainingSession, thursdaySchedule.get(1));
+        TreeMap<TimeOfDay, List<TrainingSession>> thursdaySchedule =  timetable.getTrainingSessionsForDay(DayOfWeek.THURSDAY);
+        List<TrainingSession> sessions = thursdaySchedule.get(new TimeOfDay(13, 0));
+        List<TrainingSession> sessionsLate = thursdaySchedule.get(new TimeOfDay(20, 0));
+
+        // Проверяем, что в разные временные слоты разные занятия
+        assertEquals(1, sessions.size(), "Должно быть одно занятие в 13:00");
+        assertEquals(1, sessionsLate.size(), "Должно быть одно занятие в 20:00");
+        assertEquals(thursdayChildTrainingSession, sessions.get(0));
+        assertEquals(thursdayAdultTrainingSession, sessionsLate.get(0));
         // Проверить, что за вторник не вернулось занятий
         assertEquals(0, timetable.getTrainingSessionsForDay(DayOfWeek.TUESDAY).size());
     }
